@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -30,6 +30,8 @@ async function bootstrap() {
   const SwaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api-docs', app, SwaggerDocument, {
     swaggerOptions: {
+      tagsSorter: 'alpha',
+      operationsSorter: 'method',
       // type of lists representation
       docExpansion: 'list',
       // Expansion depth
@@ -39,6 +41,19 @@ async function bootstrap() {
       persistAuthorization: true,
     },
   });
+
+  // Pipes
+  app.useGlobalPipes(
+    // Validation of DTO
+    new ValidationPipe({
+      // if DTO without decorators whole DTO won't be allowed
+      whitelist: true,
+      // In DTO only properties with decorators are allowed
+      forbidNonWhitelisted: true,
+      //   Allow transformation of Validated DTO properties (class transform used!!!!)
+      transform: true,
+    }),
+  );
 
   // Start-up of server
   await app.listen(appEnvConfig.port, () => {

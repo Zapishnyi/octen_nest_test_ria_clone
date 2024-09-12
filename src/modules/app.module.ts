@@ -1,21 +1,34 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 
-import environmentConfiguration from '../configs/envConfiguration';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { GlobalExceptionFilter } from '../common/filters/global-exeption.filter';
+import { AuthModule } from './auth/auth.module';
+import { CarsModule } from './cars/cars.module';
+import { EnvConnectionModule } from './env-connection/env-connection.module';
+import { HealthModule } from './health/health.module';
+import { PostgresModule } from './postgres/postgres.module';
+import { RedisModule } from './redis/redis.module';
+import { RepositoryModule } from './repository/repository.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [
-        environmentConfiguration,
-      ] /* add configuration to app Module import*/,
-      isGlobal:
-        true /* flag to have access to variable globally: will be visible in all modules of app*/,
-    }),
+    PostgresModule,
+    HealthModule,
+    UsersModule,
+    AuthModule,
+    CarsModule,
+    RedisModule,
+    RepositoryModule,
+    AuthModule,
+    EnvConnectionModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}
