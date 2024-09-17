@@ -1,10 +1,30 @@
+import { AdminRoleEnum } from '../modules/users/enums/user-role.enum';
+
 export type EnvConfigType = {
   app: AppConfigType;
+  admin: AdminConfigType;
+  mailer: MailerConfigType;
   sentry: SentryConfigType;
   postgres: PostgresConfigType;
   redis: RedisConfigType;
   jwt: JWTConfigType;
   aws: AwsConfig;
+};
+
+export type AdminConfigType = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  phone: string;
+  role: AdminRoleEnum;
+};
+export type MailerConfigType = {
+  host: string;
+  port: string;
+  email: string;
+  from: string;
+  pass: string;
 };
 
 export type SentryConfigType = {

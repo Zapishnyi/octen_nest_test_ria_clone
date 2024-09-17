@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AdminRoleEnum } from '../../../../common/enums/user-role.enum';
+import { UserPlanEnum } from '../../enums/user-plan.enum';
+import { AdminRoleEnum } from '../../enums/user-role.enum';
 
 export class UserBaseResDto {
   @ApiProperty({ format: 'uuid' })
@@ -24,12 +25,14 @@ export class UserBaseResDto {
   public readonly password?: string;
 
   @ApiProperty({
-    description: 'User phone number',
     example: '+30888888888',
   })
   public readonly phone: string;
 
   public readonly role: AdminRoleEnum;
+  public readonly plan: UserPlanEnum;
+
+  public readonly verify: boolean;
 
   public readonly avatar_image?: string;
 

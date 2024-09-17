@@ -1,11 +1,27 @@
 import * as process from 'node:process';
 
+import { AdminRoleEnum } from '../modules/users/enums/user-role.enum';
 import { EnvConfigType } from './envConfigType';
 
 export default (): EnvConfigType => ({
   app: {
     port: Number(process.env.APP_PORT) /*|| 3000*/,
     host: process.env.APP_HOST /*|| '0.0.0.0'*/,
+  },
+  admin: {
+    first_name: process.env.FIRST_NAME,
+    last_name: process.env.LAST_NAME,
+    email: process.env.MAIL,
+    password: process.env.PASSWORD,
+    phone: process.env.PHONE,
+    role: AdminRoleEnum[process.env.ROLE],
+  },
+  mailer: {
+    host: process.env.SMTP_SERVER,
+    port: process.env.SMTP_PORT,
+    email: process.env.SMTP_EMAIL,
+    from: process.env.FROM,
+    pass: process.env.IMAP_PASS,
   },
   sentry: {
     dsn: process.env.SENTRY_DSN,

@@ -5,15 +5,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
-import { FileContentTypeEnum } from '../../../common/enums/file-content-type.enum';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { IUserData } from '../../auth/interfaces/IUserData';
 import { AuthService } from '../../auth/services/auth.service';
 import { AuthAccessService } from '../../auth/services/auth-access.service';
+import { FileContentTypeEnum } from '../../aws-storage/enums/file-content-type.enum';
 import { AwsStorageService } from '../../aws-storage/services/aws-storage.service';
-import { UserRepository } from '../../repository/services/user_repository.service';
+import { UserRepository } from '../../repository/services/user-repository.service';
+import { GetUsersQueryReqDto } from '../dto/req/getUsersQuery.req.dto';
+import { UserSelfCreateReqDto } from '../dto/req/user-self-create.req.dto';
+import { UserUpdateReqDto } from '../dto/req/user-update.req.dto';
 import { UserResDto } from '../dto/res/user.res.dto';
+import { AdminRoleEnum } from '../enums/user-role.enum';
 import { UserPresenterService } from './user-presenter.service';
 
 @Injectable()
@@ -32,14 +37,30 @@ export class UsersService {
     private readonly userPresenter: UserPresenterService,
   ) {}
 
-  // ToDo
-  public async findAll(): Promise<any> {
-    return `This action returns all users`;
+  public async getUsers(
+    userData: IUserData,
+    query: GetUsersQueryReqDto,
+  ): Promise<[UserEntity[], number]> {
+    return await this.userRepository.getUsers(userData, query);
   }
 
-  public async findMe(UserData: IUserData): Promise<UserResDto> {
+  public async updateUser(
+    userData: IUserData,
+    dto: UserUpdateReqDto,
+    userId: string,
+  ): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (userData.user.role === AdminRoleEnum.ADMIN && dto.role) {
+      this.userRepository.merge(user, dto);
+    } else {
+      this.userRepository.merge(user, { ...dto, role: user.role });
+    }
+    return await this.userRepository.save(user);
+  }
+
+  public async findMe({ user }: IUserData): Promise<UserResDto> {
     const userFound = await this.userRepository.findOneBy({
-      id: UserData.userId,
+      id: user.id,
     });
     return this.userPresenter.toResponseDto(userFound);
   }
@@ -49,19 +70,24 @@ export class UsersService {
     // ToDo
     updateUserDto: any,
   ): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ id: UserData.userId });
+    const user = await this.userRepository.findOneBy({ id: UserData.user.id });
     this.userRepository.merge(user, updateUserDto);
     return await this.userRepository.save(user);
   }
 
-  public async removeMe(userData: IUserData): Promise<void> {
-    await this.userRepository.delete({ id: userData.userId });
+  public async createUser(dto: UserSelfCreateReqDto): Promise<UserEntity> {
+    await this.isEmailExistOrThrow(dto.email);
+    const password = await bcrypt.hash(dto.password, 10);
+    return await this.userRepository.save(
+      this.userRepository.create({ ...dto, password }),
+    );
+  }
+
+  public async removeMe({ device, user }: IUserData): Promise<void> {
+    await this.userRepository.delete({ id: user.id });
     // not needed because in entity onDelete:'CASCADE' option used
     // await this.authService.signOut(userData);
-    await this.authAccessService.deleteToken(
-      userData.userId,
-      userData.deviceId,
-    );
+    await this.authAccessService.deleteToken(user.id, device);
   }
 
   public async findOne(id: string): Promise<UserEntity> {
@@ -80,21 +106,21 @@ export class UsersService {
   }
 
   public async uploadAvatar(
-    { userId }: IUserData,
+    { user }: IUserData,
     avatar: Express.Multer.File,
   ): Promise<void> {
     const avatarPath = await this.awsStorageService.uploadFile(
       avatar,
       FileContentTypeEnum.AVATAR,
-      userId,
+      user.id,
     );
-    await this.userRepository.update(userId, { avatar_image: avatarPath });
+    await this.userRepository.update(user.id, { avatar_image: avatarPath });
   }
 
-  public async deleteAvatar({ userId }: IUserData): Promise<void> {
-    const filePath = (await this.userRepository.findOneBy({ id: userId }))
+  public async deleteAvatar({ user }: IUserData): Promise<void> {
+    const filePath = (await this.userRepository.findOneBy({ id: user.id }))
       .avatar_image;
     await this.awsStorageService.deleteFile(filePath);
-    await this.userRepository.update(userId, { avatar_image: null });
+    await this.userRepository.update(user.id, { avatar_image: null });
   }
 }

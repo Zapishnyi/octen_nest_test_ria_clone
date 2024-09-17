@@ -1,5 +1,6 @@
+import { UserResDto } from '../../users/dto/res/user.res.dto';
+
 export interface IUserData {
-  userId: string;
-  deviceId: string;
-  email: string;
+  user: UserResDto;
+  device: string;
 }

@@ -2,14 +2,26 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
+  NotAcceptableException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 
-import { SkipAuth } from '../../../common/custom_decorators/skip_auth.decorator';
+import {
+  AdminConfigType,
+  AppConfigType,
+  EnvConfigType,
+} from '../../../configs/envConfigType';
 import { UserEntity } from '../../../database/entities/user.entity';
-import { RefreshTokenRepository } from '../../repository/services/refresh_token_repository.service';
-import { UserRepository } from '../../repository/services/user_repository.service';
+import { EmailTypeEnum } from '../../mailer/enums/email-type.enum';
+import { MailService } from '../../mailer/services/mail.service';
+import { RefreshTokenRepository } from '../../repository/services/refresh-token-repository.service';
+import { UserRepository } from '../../repository/services/user-repository.service';
+import { UserCreateByAdminReqDto } from '../../users/dto/req/user-create-by-admin.req.dto';
 import { UsersService } from '../../users/services/users.service';
 import { UserSingInReqDto } from '../dto/req/user-sing-in.req.dto';
 import { UserSingUpReqDto } from '../dto/req/user-sing-up.req.dto';
@@ -27,56 +39,58 @@ export class AuthService {
     private readonly authAccessService: AuthAccessService,
     @Inject(forwardRef(() => UsersService))
     private readonly userService: UsersService,
+    private readonly envConfig: ConfigService<EnvConfigType>,
+    private readonly mailService: MailService,
   ) {}
 
   private async generateSaveTokens(
     userId: string,
-    deviceId: string,
+    device: string,
   ): Promise<TokenPairResDto> {
     const tokens = await this.tokenService.generateAuthTokens({
       userId,
-      deviceId,
+      device,
     });
     await Promise.all([
       this.refreshRepository.save({
-        deviceId,
+        device,
         refresh: tokens.refresh,
         userId,
       }),
-      this.authAccessService.saveToken(tokens.access, userId, deviceId),
+      this.authAccessService.saveToken(tokens.access, userId, device),
     ]);
     return tokens;
   }
 
-  private async deleteTokens(userId: string, deviceId: string) {
+  private async deleteTokens(userId: string, device: string) {
     // delete previously issued refresh and access Tokens
     await Promise.all([
       this.refreshRepository.delete({
-        deviceId,
+        device,
         userId,
       }),
-      this.authAccessService.deleteToken(userId, deviceId),
+      this.authAccessService.deleteToken(userId, device),
     ]);
   }
 
-  @SkipAuth()
   public async singUp(
     dto: UserSingUpReqDto,
+    request: Request,
   ): Promise<[UserEntity, TokenPairResDto]> {
     // Check if user exist
     await this.userService.isEmailExistOrThrow(dto.email);
-
+    const device = request.headers['user-agent'];
     const password = await bcrypt.hash(dto.password, 10);
     const user = await this.userRepository.save(
       this.userRepository.create({ ...dto, password }),
     );
-    const tokens = await this.generateSaveTokens(user.id, '2' /*ToDo*/);
+    const tokens = await this.generateSaveTokens(user.id, device);
     return [user, tokens];
   }
 
-  @SkipAuth()
   public async singIn(
     dto: UserSingInReqDto,
+    request: Request,
   ): Promise<[UserEntity, TokenPairResDto]> {
     // Is user exist?
     const user = await this.userRepository.findOne({
@@ -86,8 +100,10 @@ export class AuthService {
         first_name: true,
         last_name: true,
         email: true,
+        password: true,
         phone: true,
         role: true,
+        plan: true,
         avatar_image: true,
         created: true,
         updated: true,
@@ -96,29 +112,64 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException();
     }
-
     // Is password valid?
     const isPasswordValid = await bcrypt.compare(dto.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException();
     }
+    const device = request.headers['user-agent'];
     // delete previously issued refresh and access Tokens
-    await this.deleteTokens(user.id, '2' /*ToDo*/);
-
-    const tokens = await this.generateSaveTokens(user.id, '2' /*ToDo*/);
-
+    await this.deleteTokens(user.id, device);
+    const tokens = await this.generateSaveTokens(user.id, device);
     return [user, tokens];
   }
 
-  public async refresh({
-    userId,
-    deviceId,
-  }: IUserData): Promise<TokenPairResDto> {
-    await this.deleteTokens(userId, deviceId);
-    return await this.generateSaveTokens(userId, deviceId);
+  public async refresh({ user, device }: IUserData): Promise<TokenPairResDto> {
+    await this.deleteTokens(user.id, device);
+    return await this.generateSaveTokens(user.id, device);
   }
 
-  public async signOut({ userId, deviceId }: IUserData) {
-    await this.deleteTokens(userId, deviceId);
+  public async signOut({ user, device }: IUserData) {
+    await this.deleteTokens(user.id, device);
+  }
+
+  public async adminCreate(): Promise<void> {
+    const dto = plainToInstance(
+      UserCreateByAdminReqDto,
+      this.envConfig.get<AdminConfigType>('admin'),
+    );
+    const errors = await validate(dto);
+    if (errors.length > 0) {
+      throw new NotAcceptableException([
+        'Administrator data is not valid as mentioned below:',
+        ...errors.map((error) => Object.values(error.constraints)).flat(),
+      ]);
+    }
+    try {
+      if (
+        !(await this.userRepository.findOneBy({
+          email: dto.email,
+        }))
+      ) {
+        // Admin account create
+        await this.userRepository.save(
+          this.userRepository.create({
+            ...dto,
+            password: await bcrypt.hash(dto.password, 10),
+          }),
+        );
+        Logger.log('Administrator account created');
+      } else {
+        Logger.log('Administrator account exist');
+      }
+      const { port, host } = this.envConfig.get<AppConfigType>('app');
+      await this.mailService.sendMail(EmailTypeEnum.ADMIN_GREETING, dto.email, {
+        first_name: dto.first_name,
+        last_name: dto.last_name,
+        api_docs_url: `http://${host}:${port}/api-docs`,
+      });
+    } catch (err) {
+      Logger.log('Administrator account creation error', err);
+    }
   }
 }

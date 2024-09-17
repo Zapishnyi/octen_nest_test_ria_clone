@@ -1,10 +1,10 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 
-import { UserPlanEnum } from '../../common/enums/user-plan.enum';
-import { AdminRoleEnum } from '../../common/enums/user-role.enum';
+import { UserPlanEnum } from '../../modules/users/enums/user-plan.enum';
+import { AdminRoleEnum } from '../../modules/users/enums/user-role.enum';
 import { BaseModel } from './base_model/base.model';
 import { CarEntity } from './car.entity';
-import { RefreshTokenEntity } from './refresh_token.entity';
+import { RefreshTokenEntity } from './refresh-token.entity';
 
 @Entity('users')
 export class UserEntity extends BaseModel {
@@ -17,17 +17,23 @@ export class UserEntity extends BaseModel {
   @Column('text', { unique: true })
   email: string;
 
-  @Column('text', { select: false })
+  @Column('text', { select: false, unique: true })
   password: string;
 
   @Column('text', { nullable: true })
   phone: string;
 
-  @Column('enum', { enum: AdminRoleEnum, default: AdminRoleEnum.BUYER })
+  @Column('enum', { enum: AdminRoleEnum, default: AdminRoleEnum.USER })
   role: AdminRoleEnum;
 
   @Column('enum', { enum: UserPlanEnum, default: UserPlanEnum.BASE })
   plan: UserPlanEnum;
+
+  @Column('boolean', { default: false })
+  verify: boolean;
+
+  @Column('boolean', { default: false })
+  ban: boolean;
 
   @Column('text', { nullable: true })
   avatar_image?: string;

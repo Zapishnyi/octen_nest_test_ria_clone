@@ -82,11 +82,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         status = HttpStatus.UNAUTHORIZED;
         messages = (exception as JsonWebTokenError).message;
         break;
-      // case exception instanceof Error:
-      //   status = HttpStatus.UNPROCESSABLE_ENTITY;
-      //   messages = (exception as QueryFailedError).message;
-      //   break;
-      // all other errors
+
       default:
         Logger.log(exception);
         status = HttpStatus.INTERNAL_SERVER_ERROR;

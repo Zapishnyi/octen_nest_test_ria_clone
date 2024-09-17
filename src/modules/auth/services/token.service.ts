@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
-import { TokenTypeEnum } from '../../../common/enums/token-type.enum';
 import { EnvConfigType, JWTConfigType } from '../../../configs/envConfigType';
+import { TokenTypeEnum } from '../enums/token-type.enum';
 import { IJwtPayload } from '../interfaces/IJWTPayload';
 import { ITokenPair } from '../interfaces/ITokenPair';
 

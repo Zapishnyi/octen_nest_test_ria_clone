@@ -9,8 +9,8 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { FileContentTypeEnum } from '../../../common/enums/file-content-type.enum';
 import { AwsConfig, EnvConfigType } from '../../../configs/envConfigType';
+import { FileContentTypeEnum } from '../enums/file-content-type.enum';
 
 @Injectable()
 export class AwsStorageService {

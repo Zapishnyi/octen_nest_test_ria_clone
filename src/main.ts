@@ -5,6 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppConfigType } from './configs/envConfigType';
 import { AppModule } from './modules/app.module';
+import { AuthService } from './modules/auth/services/auth.service';
+import { RateRepository } from './modules/repository/services/rate-repository.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,8 +16,8 @@ async function bootstrap() {
   const appEnvConfig = envConfigService.get<AppConfigType>('app');
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('OKTEN Nest Home Work API')
-    .setDescription('API description')
+    .setTitle('OKTEN TEST RIA clone API')
+    .setDescription('Car marketplace API')
     .setVersion('1.0')
     .addBearerAuth({
       /* Authentication */
@@ -31,7 +33,7 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, SwaggerDocument, {
     swaggerOptions: {
       tagsSorter: 'alpha',
-      operationsSorter: 'method',
+      // operationsSorter: 'method',
       // type of lists representation
       docExpansion: 'list',
       // Expansion depth
@@ -56,8 +58,9 @@ async function bootstrap() {
   );
 
   // Start-up of server
-  await app.listen(appEnvConfig.port, () => {
-    // Logger - Nest log instead of console.log
+  await app.listen(appEnvConfig.port, async () => {
+    await app.get(AuthService).adminCreate();
+    await app.get(RateRepository).updateCurrency();
     Logger.log(
       `Server started on: http://${appEnvConfig.host}:${appEnvConfig.port}`,
     );

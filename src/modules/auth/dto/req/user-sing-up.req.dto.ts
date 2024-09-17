@@ -6,7 +6,6 @@ export class UserSingUpReqDto extends PickType(BaseUserAuthReqDto, [
   'email',
   'password',
   'phone',
-  'role',
   'first_name',
   'last_name',
 ]) {}

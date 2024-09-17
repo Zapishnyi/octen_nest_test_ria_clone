@@ -15,6 +15,10 @@ export class TransformHelper {
     return value ? value.map((item) => item.toLowerCase()) : value;
   }
 
+  public static toUpperCaseArray({ value }: { value: string[] }): string[] {
+    return value ? value.map((item) => item.toUpperCase()) : value;
+  }
+
   public static uniqueItemsArray({ value }: { value: string[] }): string[] {
     return value ? Array.from(new Set(value)) : value;
   }

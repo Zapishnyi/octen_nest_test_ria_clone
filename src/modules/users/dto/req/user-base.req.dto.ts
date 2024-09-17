@@ -9,8 +9,10 @@ import {
   Matches,
 } from 'class-validator';
 
-import { AdminRoleEnum } from '../../../../common/enums/user-role.enum';
 import { TransformHelper } from '../../../../common/helpers/Transform.helper';
+import { regexp } from '../../constants/regexp';
+import { UserPlanEnum } from '../../enums/user-plan.enum';
+import { AdminRoleEnum } from '../../enums/user-role.enum';
 
 export class UserBaseReqDto {
   @IsNotEmpty()
@@ -34,14 +36,14 @@ export class UserBaseReqDto {
   public readonly last_name: string;
 
   @IsString()
-  @Matches(/^\S+@\S+\.\S+$/, { message: 'Must be a valid e-mail address' })
+  @Matches(regexp.email, { message: 'Must be a valid e-mail address' })
   @Transform(TransformHelper.trim)
   @ApiProperty({ example: 'customer@gmail.com' })
   public readonly email: string;
 
   @IsString()
   @Transform(TransformHelper.trim)
-  @Matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/, {
+  @Matches(regexp.password, {
     message:
       'Password must contain one digit from 1 to 9, one lowercase letter, one uppercase letter,' +
       'one special character, no space, and it must be 8-16 characters long.',
@@ -53,7 +55,7 @@ export class UserBaseReqDto {
   @IsString()
   @Length(8, 15)
   @Transform(TransformHelper.trim)
-  @Matches(/(?=.*\+[0-9]{3}\s?[0-9]{2}\s?[0-9]{3}\s?[0-9]{4,5}$)/gm, {
+  @Matches(regexp.phone, {
     message: 'Please enter valid phone number',
   })
   @ApiProperty({
@@ -68,8 +70,16 @@ export class UserBaseReqDto {
       'Role must be one of the following values: buyer, seller, manager, admin',
   })
   @Transform(TransformHelper.trim)
-  @ApiProperty({ enum: AdminRoleEnum, default: AdminRoleEnum.BUYER })
+  @ApiProperty({ enum: AdminRoleEnum, default: AdminRoleEnum.USER })
   public readonly role: AdminRoleEnum;
+
+  @IsString()
+  @IsEnum(UserPlanEnum, {
+    message: 'Plan must be one of the following values:base,premium',
+  })
+  @Transform(TransformHelper.trim)
+  @IsOptional()
+  public readonly plan?: UserPlanEnum;
 
   @IsNotEmpty()
   @IsString()
@@ -80,5 +90,5 @@ export class UserBaseReqDto {
     required: false,
     example: 'path to image',
   })
-  public readonly avatar?: string;
+  public readonly avatar_image?: string;
 }
