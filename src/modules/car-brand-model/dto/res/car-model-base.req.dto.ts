@@ -13,6 +13,6 @@ export class CarModelResDto {
   public readonly created: Date;
 
   public readonly updated: Date;
-  // ToDo
+
   public readonly cars?: any;
 }
