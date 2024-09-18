@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { CarEntity } from '../../../database/entities/car.entity';
 import { CarRepository } from '../../repository/services/car-repository.service';
 
 @Injectable()
@@ -10,7 +9,7 @@ export class CarsService {
   public async create() // { user }: IUserData,
   // brandId: string,
   // dto: CarReqDto,
-  : Promise<CarEntity> {
+  : Promise<any> {
     // public async search(
     //
     return;
