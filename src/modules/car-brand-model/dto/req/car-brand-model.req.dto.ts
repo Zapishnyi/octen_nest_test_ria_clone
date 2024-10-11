@@ -1,10 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsString, Length } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  Length,
+} from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/Transform.helper';
 
-export class CarModelListReqDto {
+export class CarBrandModelReqDto {
   @IsNotEmpty()
   @IsString()
   @Length(0, 20)
@@ -15,14 +21,15 @@ export class CarModelListReqDto {
   })
   public readonly brand: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ each: true })
   @IsArray()
-  @IsString({ each: true })
-  @Length(0, 20, { each: true })
+  @IsString({ each: true, message: 'Each model must be a string' })
+  @ArrayNotEmpty({ message: 'Models array must not be empty' })
+  @Length(0, 30, { each: true })
   @Transform(TransformHelper.trimArray)
   @ApiProperty({
     description: 'list of car models you want to upload',
     example: ['S5', 'S3'],
   })
-  public readonly modelList: string[];
+  public readonly models: string[];
 }

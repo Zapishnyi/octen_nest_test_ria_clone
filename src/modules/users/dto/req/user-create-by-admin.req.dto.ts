@@ -12,7 +12,6 @@ export class UserCreateByAdminReqDto extends PickType(UserBaseReqDto, [
   'last_name',
   'email',
   'phone',
-  'avatar_image',
   'password',
 ]) {
   @IsString()

@@ -4,7 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { IUserData } from '../../auth/interfaces/IUserData';
 import { rolePick } from '../../users/constants/rolePick';
-import { GetUsersQueryReqDto } from '../../users/dto/req/getUsersQuery.req.dto';
+import { GetUsersQueryReqDto } from '../../users/dto/req/get-users-query.req.dto';
 
 @Injectable()
 export class UserRepository extends Repository<UserEntity> {

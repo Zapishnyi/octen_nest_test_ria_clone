@@ -19,7 +19,8 @@ export class CarBaseReqDto {
   @IsNotEmpty()
   @Transform(TransformHelper.trim)
   @ApiProperty({
-    description: 'Only brands from provided list permitted',
+    description:
+      'Only brands from provided list permitted, contact administration if yours missing',
     example: 'BMW',
   })
   brand: string;
@@ -29,10 +30,22 @@ export class CarBaseReqDto {
   @Length(1, 20)
   @Transform(TransformHelper.trim)
   @ApiProperty({
-    description: 'Car model',
-    example: 'S3',
+    description:
+      'Only models from provided list permitted, contact administration if yours missing',
+    example: '325xi',
   })
   model: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Length(1, 30)
+  @Transform(TransformHelper.trim)
+  @ApiProperty({
+    description:
+      'Only cities from provided list permitted, contact administration if yours missing',
+    example: 'Lviv',
+  })
+  city: string;
 
   @IsNotEmpty()
   @IsNumber()

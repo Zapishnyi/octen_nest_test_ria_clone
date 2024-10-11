@@ -6,10 +6,10 @@ import { CarEntity } from './car.entity';
 @Entity('show_list')
 export class ShowListEntity extends BaseModel {
   @Column('text')
-  carId: string;
-  @ManyToOne(() => CarEntity, (entity) => entity.showsInList, {
+  car_id: string;
+  @ManyToOne(() => CarEntity, (entity) => entity.shows_in_list, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'carId' })
+  @JoinColumn({ name: 'car_id' })
   car?: CarEntity;
 }
