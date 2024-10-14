@@ -14,21 +14,15 @@ import { AuthAccessService } from '../../auth/services/auth-access.service';
 import { FileContentTypeEnum } from '../../aws-storage/enums/file-content-type.enum';
 import { AwsStorageService } from '../../aws-storage/services/aws-storage.service';
 import { UserRepository } from '../../repository/services/user-repository.service';
-import { GetUsersQueryReqDto } from '../dto/req/getUsersQuery.req.dto';
+import { GetUsersQueryReqDto } from '../dto/req/get-users-query.req.dto';
 import { UserSelfCreateReqDto } from '../dto/req/user-self-create.req.dto';
-import { UserUpdateReqDto } from '../dto/req/user-update.req.dto';
+import { UserUpdateByAdminReqDto } from '../dto/req/user-update-by-admin.req.dto';
 import { UserResDto } from '../dto/res/user.res.dto';
-import { AdminRoleEnum } from '../enums/user-role.enum';
 import { UserPresenterService } from './user-presenter.service';
 
 @Injectable()
-// @Injectable() you're declaring that this class can be managed by the NestJS IoC
-// (Inversion of Control) container. This allows NestJS to handle the lifecycle of
-// the class and inject it wherever it's needed.
 export class UsersService {
   constructor(
-    /*Integration of methods/services from sabling modules*/
-    // public readonly postService: PostsService,
     public readonly userRepository: UserRepository,
     public readonly authAccessService: AuthAccessService,
     @Inject(forwardRef(() => AuthService))
@@ -45,16 +39,11 @@ export class UsersService {
   }
 
   public async updateUser(
-    userData: IUserData,
-    dto: UserUpdateReqDto,
-    userId: string,
+    dto: UserUpdateByAdminReqDto,
+    user_id: string,
   ): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ id: userId });
-    if (userData.user.role === AdminRoleEnum.ADMIN && dto.role) {
-      this.userRepository.merge(user, dto);
-    } else {
-      this.userRepository.merge(user, { ...dto, role: user.role });
-    }
+    const user = await this.userRepository.findOneBy({ id: user_id });
+    this.userRepository.merge(user, dto);
     return await this.userRepository.save(user);
   }
 
@@ -63,16 +52,6 @@ export class UsersService {
       id: user.id,
     });
     return this.userPresenter.toResponseDto(userFound);
-  }
-
-  public async updateMe(
-    UserData: IUserData,
-    // ToDo
-    updateUserDto: any,
-  ): Promise<UserEntity> {
-    const user = await this.userRepository.findOneBy({ id: UserData.user.id });
-    this.userRepository.merge(user, updateUserDto);
-    return await this.userRepository.save(user);
   }
 
   public async createUser(dto: UserSelfCreateReqDto): Promise<UserEntity> {
@@ -84,6 +63,13 @@ export class UsersService {
   }
 
   public async removeMe({ device, user }: IUserData): Promise<void> {
+    const images = [
+      user.avatar_image,
+      ...user.cars.map((car) => car.image).flat(),
+    ];
+    for (const image of images) {
+      await this.awsStorageService.deleteFile(image);
+    }
     await this.userRepository.delete({ id: user.id });
     // not needed because in entity onDelete:'CASCADE' option used
     // await this.authService.signOut(userData);

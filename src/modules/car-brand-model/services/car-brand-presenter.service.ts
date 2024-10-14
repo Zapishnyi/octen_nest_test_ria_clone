@@ -2,29 +2,18 @@ import { Injectable } from '@nestjs/common';
 
 import { CarBrandEntity } from '../../../database/entities/car-brand.entity';
 import { GetBrandsModelsQueryReqDto } from '../dto/req/get-brand-model-query.req.dto';
-import { CarBrandListResDto } from '../dto/res/car_brand-list.res.dto';
 import { CarBrandResDto } from '../dto/res/car-brand.res.dto';
-import { CarModelPresenterService } from './car-model-presenter.service';
+import { CarBrandListResDto } from '../dto/res/car-brand-list.res.dto';
+import { CarModelPresenterService } from './to_delete/car-model-presenter.service';
 
 @Injectable()
 export class CarBrandPresenterService {
   constructor(private readonly carModelPresenter: CarModelPresenterService) {}
 
-  public toResponseDto({
-    brand,
-    created,
-    updated,
-    id,
-    models,
-  }: CarBrandEntity): CarBrandResDto {
+  public toResponseDto({ name, models }: CarBrandEntity): CarBrandResDto {
     return {
-      id,
-      brand,
-      created,
-      updated,
-      models: models?.map((model) =>
-        this.carModelPresenter.toResponseDto(model),
-      ),
+      brand: name,
+      models: models?.map((model) => this.carModelPresenter.toString(model)),
     };
   }
 

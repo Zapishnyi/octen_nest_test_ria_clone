@@ -35,20 +35,29 @@ export class AwsStorageService {
   }
 
   private buildPath(
-    fileType: FileContentTypeEnum,
-    userId: string,
-    fileName: string,
+    file_type: FileContentTypeEnum,
+    user_id: string,
+    file_name: string,
+    car_id?: string,
   ): string {
-    return `${fileType}/${userId}/${randomUUID()}${path.extname(fileName)}`;
+    return car_id
+      ? `${user_id}/${car_id}/${file_type}/${randomUUID()}${path.extname(file_name)}`
+      : `${user_id}/${file_type}/${randomUUID()}${path.extname(file_name)}`;
   }
 
   public async uploadFile(
     file: Express.Multer.File,
-    fileType: FileContentTypeEnum,
-    userId: string,
+    file_type: FileContentTypeEnum,
+    user_id: string,
+    car_id?: string,
   ): Promise<string> {
     try {
-      const filePath = this.buildPath(fileType, userId, file.originalname);
+      const filePath = this.buildPath(
+        file_type,
+        user_id,
+        file.originalname,
+        car_id,
+      );
       await this.s3Client.send(
         new PutObjectCommand({
           Bucket: this.awsConfig.bucketName,
@@ -61,7 +70,7 @@ export class AwsStorageService {
       return filePath;
     } catch (error) {
       // this.logger.error(error);
-      Logger.log(error);
+      Logger.error(error);
     }
   }
 

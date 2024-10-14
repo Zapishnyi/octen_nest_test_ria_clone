@@ -19,6 +19,7 @@ export class GetBrandsModelsQueryReqDto {
   page: number = 1;
 
   @ApiProperty({ default: false, nullable: false })
+  @Transform(TransformHelper.toBoolean)
   @IsOptional()
   models?: boolean;
 

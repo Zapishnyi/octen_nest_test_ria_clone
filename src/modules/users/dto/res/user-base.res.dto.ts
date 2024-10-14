@@ -31,6 +31,7 @@ export class UserBaseResDto {
 
   public readonly role: AdminRoleEnum;
   public readonly plan: UserPlanEnum;
+  public readonly ban: boolean;
 
   public readonly verify: boolean;
 

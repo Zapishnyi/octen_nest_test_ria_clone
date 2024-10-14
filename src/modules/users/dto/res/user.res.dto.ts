@@ -10,6 +10,7 @@ export class UserResDto extends PickType(UserBaseResDto, [
   'phone',
   'plan',
   'role',
+  'ban',
   'avatar_image',
   'verify',
   'created',

@@ -5,4 +5,8 @@ export const emailResponseTree = {
     subject: 'Application started',
     template: 'admin_welcome',
   },
+  [EmailTypeEnum.MANAGER_PROFANITY_NOTICE]: {
+    subject: 'Profanity violation notice',
+    template: 'profanity_notice',
+  },
 };

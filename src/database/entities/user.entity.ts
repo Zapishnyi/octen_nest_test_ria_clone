@@ -6,7 +6,7 @@ import { BaseModel } from './base_model/base.model';
 import { CarEntity } from './car.entity';
 import { RefreshTokenEntity } from './refresh-token.entity';
 
-@Entity('users')
+@Entity('user')
 export class UserEntity extends BaseModel {
   @Column('text')
   first_name: string;
@@ -17,7 +17,7 @@ export class UserEntity extends BaseModel {
   @Column('text', { unique: true })
   email: string;
 
-  @Column('text', { select: false, unique: true })
+  @Column('text', { select: false })
   password: string;
 
   @Column('text', { nullable: true })

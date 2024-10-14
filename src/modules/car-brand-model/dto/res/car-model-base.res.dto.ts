@@ -1,14 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CarModelResDto {
+export class CarModelBaseResDto {
   @ApiProperty({ format: 'uuid' })
   public readonly id: string;
 
   @ApiProperty({ type: 'string', example: 'S3' })
   public readonly model: string;
-
-  @ApiProperty({ format: 'uuid' })
-  public readonly brandId: string;
 
   public readonly created: Date;
 

@@ -11,13 +11,8 @@ import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
-import {
-  AdminConfigType,
-  AppConfigType,
-  EnvConfigType,
-} from '../../../configs/envConfigType';
+import { AdminConfigType, EnvConfigType } from '../../../configs/envConfigType';
 import { UserEntity } from '../../../database/entities/user.entity';
-import { EmailTypeEnum } from '../../mailer/enums/email-type.enum';
 import { MailService } from '../../mailer/services/mail.service';
 import { RefreshTokenRepository } from '../../repository/services/refresh-token-repository.service';
 import { UserRepository } from '../../repository/services/user-repository.service';
@@ -44,32 +39,32 @@ export class AuthService {
   ) {}
 
   private async generateSaveTokens(
-    userId: string,
+    user_id: string,
     device: string,
   ): Promise<TokenPairResDto> {
     const tokens = await this.tokenService.generateAuthTokens({
-      userId,
+      user_id,
       device,
     });
     await Promise.all([
       this.refreshRepository.save({
         device,
         refresh: tokens.refresh,
-        userId,
+        user_id,
       }),
-      this.authAccessService.saveToken(tokens.access, userId, device),
+      this.authAccessService.saveToken(tokens.access, user_id, device),
     ]);
     return tokens;
   }
 
-  private async deleteTokens(userId: string, device: string) {
+  private async deleteTokens(user_id: string, device: string) {
     // delete previously issued refresh and access Tokens
     await Promise.all([
       this.refreshRepository.delete({
         device,
-        userId,
+        user_id,
       }),
-      this.authAccessService.deleteToken(userId, device),
+      this.authAccessService.deleteToken(user_id, device),
     ]);
   }
 
@@ -162,12 +157,12 @@ export class AuthService {
       } else {
         Logger.log('Administrator account exist');
       }
-      const { port, host } = this.envConfig.get<AppConfigType>('app');
-      await this.mailService.sendMail(EmailTypeEnum.ADMIN_GREETING, dto.email, {
-        first_name: dto.first_name,
-        last_name: dto.last_name,
-        api_docs_url: `http://${host}:${port}/api-docs`,
-      });
+      // const { port, host } = this.envConfig.get<AppConfigType>('app');
+      // await this.mailService.sendMail(EmailTypeEnum.ADMIN_GREETING, dto.email, {
+      //   first_name: dto.first_name,
+      //   last_name: dto.last_name,
+      //   api_docs_url: `http://${host}:${port}/api-docs`,
+      // });
     } catch (err) {
       Logger.log('Administrator account creation error', err);
     }
