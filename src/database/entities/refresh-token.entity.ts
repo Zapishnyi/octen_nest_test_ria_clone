@@ -14,11 +14,13 @@ export class RefreshTokenEntity extends BaseModel {
   device: string;
 
   @Column('text')
-  user_id: string;
+  userId: string;
 
   @ManyToOne(() => UserEntity, (entity) => entity.refresh_tokens, {
+    // When you set onDelete: 'CASCADE' on a foreign key, it means that if a row in the parent table is deleted,
+    // all rows in the child table that reference the deleted row will also be automatically deleted.
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   user?: UserEntity;
 }

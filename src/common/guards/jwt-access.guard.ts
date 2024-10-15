@@ -34,16 +34,16 @@ export class JwtAccessGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    const { user_id, device } = await this.tokenService.verifyToken(
+    const { userId, device } = await this.tokenService.verifyToken(
       access,
       TokenTypeEnum.ACCESS,
     );
-    if (!user_id) {
+    if (!userId) {
       throw new UnauthorizedException();
     }
 
     const accessTokenExist = await this.authAccessService.isAccessTokenExist(
-      user_id,
+      userId,
       device,
       access,
     );
@@ -51,11 +51,8 @@ export class JwtAccessGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userRepository.findOne({
-      where: {
-        id: user_id,
-      },
-      relations: ['cars'],
+    const user = await this.userRepository.findOneBy({
+      id: userId,
     });
     if (!user) {
       throw new UnauthorizedException();

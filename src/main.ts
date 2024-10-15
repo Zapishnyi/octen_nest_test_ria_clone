@@ -38,8 +38,8 @@ async function bootstrap() {
       docExpansion: 'list',
       // Expansion depth
       defaultModelExpandDepth: 1,
-      // authorization credentials (like an access token, JWT, or session token)
-      // will be stored and reused across multiple requests or sessions.
+      // eslint-disable-next-line max-len
+      // authorization credentials (like an access token, JWT, or session token) will be stored and reused across multiple requests or sessions.
       persistAuthorization: true,
     },
   });

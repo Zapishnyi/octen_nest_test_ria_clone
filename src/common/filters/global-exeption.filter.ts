@@ -84,8 +84,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         break;
 
       default:
-        Logger.error(exception);
-        // console.log(exception);
+        Logger.log(exception);
         status = HttpStatus.INTERNAL_SERVER_ERROR;
         messages = 'Internal server error';
     }

@@ -5,7 +5,7 @@ import { CarBrandResDto } from './car-brand.res.dto';
 
 export class CarBrandListResDto {
   @ApiProperty({
-    type: [CarBrandResDto],
+    example: CarBrandResDto,
     description: 'List of car brands as per query',
   })
   data: CarBrandResDto[];

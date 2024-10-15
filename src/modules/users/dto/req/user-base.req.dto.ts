@@ -66,7 +66,8 @@ export class UserBaseReqDto {
 
   @IsString()
   @IsEnum(AdminRoleEnum, {
-    message: 'Role must be one of the following values: user, manager, admin',
+    message:
+      'Role must be one of the following values: buyer, seller, manager, admin',
   })
   @Transform(TransformHelper.trim)
   @ApiProperty({ enum: AdminRoleEnum, default: AdminRoleEnum.USER })

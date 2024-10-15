@@ -17,23 +17,14 @@ export class BrandValidateGuard implements CanActivate {
   ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const dto = request['body'] as CarReqDto;
-    const [brand] = await this.carBrandRepository.getBradsModels({
-      search_brand: dto.brand,
-      models: true,
-      page: 1,
-      limit: 1,
-    });
-    const model =
-      brand[0].models?.filter((model) => model.name === dto.model) || [];
-
-    if (!brand.length || !model.length) {
+    const brand = await this.carBrandRepository.findBy({ brand: dto.brand });
+    if (!brand.length) {
       throw new BadRequestException(
-        'Brand/model is not comply with provided car brand/models list',
+        'Brand is not comply with provided car brand list',
       );
     }
     request.brand_data = {
-      brand: brand[0],
-      model: model[0],
+      brandId: brand[0].id,
     };
     return true;
   }
