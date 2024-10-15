@@ -7,6 +7,7 @@ export class CarCreateResDto extends PickType(CarResDto, [
   'brand',
   'model',
   'build',
+  'description',
   'mileage',
   'image',
   'price_initial',
