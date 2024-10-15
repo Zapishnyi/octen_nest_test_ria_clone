@@ -1,6 +1,6 @@
-import { UserEntity } from '../../../database/entities/user.entity';
+import { UserResDto } from '../../users/dto/res/user.res.dto';
 
 export interface IUserData {
-  user: UserEntity;
+  user: UserResDto;
   device: string;
 }

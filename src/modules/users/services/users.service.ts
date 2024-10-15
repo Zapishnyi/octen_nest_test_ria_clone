@@ -14,7 +14,7 @@ import { AuthAccessService } from '../../auth/services/auth-access.service';
 import { FileContentTypeEnum } from '../../aws-storage/enums/file-content-type.enum';
 import { AwsStorageService } from '../../aws-storage/services/aws-storage.service';
 import { UserRepository } from '../../repository/services/user-repository.service';
-import { GetUsersQueryReqDto } from '../dto/req/get-users-query.req.dto';
+import { GetUsersQueryReqDto } from '../dto/req/getUsersQuery.req.dto';
 import { UserSelfCreateReqDto } from '../dto/req/user-self-create.req.dto';
 import { UserUpdateByAdminReqDto } from '../dto/req/user-update-by-admin.req.dto';
 import { UserResDto } from '../dto/res/user.res.dto';
@@ -63,13 +63,6 @@ export class UsersService {
   }
 
   public async removeMe({ device, user }: IUserData): Promise<void> {
-    const images = [
-      user.avatar_image,
-      ...user.cars.map((car) => car.image).flat(),
-    ];
-    for (const image of images) {
-      await this.awsStorageService.deleteFile(image);
-    }
     await this.userRepository.delete({ id: user.id });
     // not needed because in entity onDelete:'CASCADE' option used
     // await this.authService.signOut(userData);

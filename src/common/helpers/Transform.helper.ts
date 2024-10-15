@@ -11,10 +11,6 @@ export class TransformHelper {
     return value ? value.toUpperCase() : value;
   }
 
-  public static toNumber({ value }: { value: string }): number {
-    return Number(value);
-  }
-
   public static toLowerCaseArray({ value }: { value: string[] }): string[] {
     return value ? value.map((item) => item.toLowerCase()) : value;
   }
@@ -29,9 +25,5 @@ export class TransformHelper {
 
   public static trimArray({ value }: { value: string[] }): string[] {
     return value ? value.map((item) => item.trim()) : value;
-  }
-
-  public static toBoolean({ value }: { value: string }): boolean {
-    return value ? JSON.parse(value.toLowerCase()) : false;
   }
 }

@@ -1,21 +1,17 @@
-import { PickType } from '@nestjs/swagger';
-import { Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 import { BaseModel } from './base_model/base.model';
 import { CarEntity } from './car.entity';
 import { CarModelEntity } from './car-model.entity';
 
-@Entity('car_brand')
-export class CarBrandEntity extends PickType(BaseModel, [
-  'created',
-  'updated',
-]) {
-  @PrimaryColumn('text', { unique: true })
-  name: string;
+@Entity('car_brands')
+export class CarBrandEntity extends BaseModel {
+  @Column('text', { unique: true })
+  brand: string;
 
   @OneToMany(() => CarModelEntity, (entity) => entity.brand)
   models?: CarModelEntity[];
 
-  @OneToMany(() => CarEntity, (entity) => entity.brand)
+  @OneToMany(() => CarEntity, (entity) => entity.brand_link)
   cars?: CarEntity[];
 }

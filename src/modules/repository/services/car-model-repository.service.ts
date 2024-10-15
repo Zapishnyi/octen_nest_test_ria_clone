@@ -13,17 +13,13 @@ export class CarModelRepository extends Repository<CarModelEntity> {
   //   return (await this.find()).map((entity) => entity.brand);
   // }
 
-  public async modelExist(
-    models: string[],
-    brand_id: string,
-  ): Promise<CarModelEntity[]> {
+  public async modelExist(models: string[]): Promise<CarModelEntity[]> {
     try {
       return await this.createQueryBuilder('car_model')
-        .andWhere('car_model.brand_id = :brand_id', { brand_id })
-        .andWhere(`car_model.name ILIKE ANY (ARRAY[:...models])`, {
+        .andWhere(`car_model.model ILIKE ANY (ARRAY[:...models])`, {
           models: models.map((model) => `%${model}%`),
         })
-        .orderBy({ 'car_model.name': 'ASC' })
+        .orderBy({ 'car_model.model': 'ASC' })
         .getMany();
     } catch (err) {
       throw new Error(err);

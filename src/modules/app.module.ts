@@ -8,7 +8,6 @@ import { CarBrandModelModule } from './car-brand-model/car-brand-model.module';
 import { CarsModule } from './cars/cars.module';
 import { EnvConnectionModule } from './env-connection/env-connection.module';
 import { HealthModule } from './health/health.module';
-import { LocationModule } from './location/location.module';
 import { MailModule } from './mailer/mail.module';
 import { PostgresModule } from './postgres/postgres.module';
 import { RedisModule } from './redis/redis.module';
@@ -29,7 +28,6 @@ import { UsersModule } from './users/users.module';
     EnvConnectionModule,
     MailModule,
     CarBrandModelModule,
-    LocationModule,
   ],
   controllers: [],
   providers: [

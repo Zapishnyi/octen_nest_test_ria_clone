@@ -28,11 +28,11 @@ export class JwtRefreshGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
-    const { user_id, device } = await this.tokenService.verifyToken(
+    const { userId, device } = await this.tokenService.verifyToken(
       refresh,
       TokenTypeEnum.REFRESH,
     );
-    if (!user_id) {
+    if (!userId) {
       throw new UnauthorizedException();
     }
 
@@ -43,7 +43,7 @@ export class JwtRefreshGuard implements CanActivate {
     }
 
     const user = await this.userRepository.findOneBy({
-      id: user_id,
+      id: userId,
     });
     if (!user) {
       throw new UnauthorizedException();

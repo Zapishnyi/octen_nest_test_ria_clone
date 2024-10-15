@@ -2,19 +2,19 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { CarEntity } from './car.entity';
+import { MarkerEnum } from '../../modules/repository/enums/marker.enum';
 
 @Entity('rate')
 export class RateEntity {
-  @PrimaryColumn('text', {
-    default: 'marker',
+  @PrimaryColumn('enum', {
+    enum: MarkerEnum,
+    default: MarkerEnum.MARKER,
   })
-  marker: string;
+  marker: MarkerEnum;
 
   @Column('float')
   buy_eur: number;
@@ -33,7 +33,4 @@ export class RateEntity {
 
   @UpdateDateColumn()
   updated: Date;
-
-  @OneToMany(() => CarEntity, (entity) => entity.rate)
-  cars?: CarEntity[];
 }

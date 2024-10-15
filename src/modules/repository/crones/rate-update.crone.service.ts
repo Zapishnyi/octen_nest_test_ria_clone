@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 
-import { RateRepository } from '../../modules/repository/services/rate-repository.service';
+import { RateRepository } from '../services/rate-repository.service';
 
 @Injectable()
 export class RateUpdateCroneService {

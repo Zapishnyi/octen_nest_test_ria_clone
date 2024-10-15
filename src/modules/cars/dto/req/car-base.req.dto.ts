@@ -20,8 +20,7 @@ export class CarBaseReqDto {
   @IsNotEmpty()
   @Transform(TransformHelper.trim)
   @ApiProperty({
-    description:
-      'Only brands from provided list permitted, contact administration if yours missing',
+    description: 'Only brands from provided list permitted',
     example: 'BMW',
   })
   brand: string;
@@ -31,13 +30,13 @@ export class CarBaseReqDto {
   @Length(1, 20)
   @Transform(TransformHelper.trim)
   @ApiProperty({
-    description:
-      'Only models from provided list permitted, contact administration if yours missing',
-    example: '325xi',
+    description: 'Car model',
+    example: 'S3',
   })
   model: string;
 
   @IsNotEmpty()
+<<<<<<< HEAD
   @IsString()
   @Length(1, 300)
   @Transform(TransformHelper.trim)
@@ -62,6 +61,8 @@ export class CarBaseReqDto {
   city: string;
 
   @IsNotEmpty()
+=======
+>>>>>>> parent of 199533d (image managment corrected)
   @IsNumber()
   @Min(0)
   @Max(400000)
