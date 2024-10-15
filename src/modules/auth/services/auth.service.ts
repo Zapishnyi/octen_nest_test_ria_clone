@@ -11,7 +11,11 @@ import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
-import { AdminConfigType, EnvConfigType } from '../../../configs/envConfigType';
+import {
+  AdminConfigType,
+  AppConfigType,
+  EnvConfigType,
+} from '../../../configs/envConfigType';
 import { UserEntity } from '../../../database/entities/user.entity';
 import { EmailTypeEnum } from '../../mailer/enums/email-type.enum';
 import { MailService } from '../../mailer/services/mail.service';
