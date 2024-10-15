@@ -34,6 +34,7 @@ export class UserListItemResDto {
   public readonly role: AdminRoleEnum;
   public readonly plan: UserPlanEnum;
   public readonly verify: boolean;
+  public readonly ban: boolean;
 
   public readonly avatar_image?: string;
 

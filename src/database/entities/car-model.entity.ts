@@ -1,22 +1,22 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { BaseModel } from './base_model/base.model';
 import { CarEntity } from './car.entity';
 import { CarBrandEntity } from './car-brand.entity';
 
-@Entity('car_models')
+@Entity('car_model')
 export class CarModelEntity extends BaseModel {
   @Column('text')
-  model: string;
+  name: string;
 
-  @Column('text')
-  brandId: string;
+  // @Column('text')
+  // brand: string;
   @ManyToOne(() => CarBrandEntity, (entity) => entity.models, {
-    onDelete: 'CASCADE',
+    // onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'brand_id' })
+  // @JoinColumn({ name: 'brand' })
   brand: CarBrandEntity;
 
-  @OneToMany(() => CarEntity, (entity) => entity.model_link)
+  @OneToMany(() => CarEntity, (entity) => entity.model)
   cars?: CarEntity[];
 }

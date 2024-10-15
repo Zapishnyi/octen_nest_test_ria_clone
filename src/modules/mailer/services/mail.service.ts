@@ -19,7 +19,7 @@ export class MailService {
 
   public async sendMail<T extends EmailTypeEnum>(
     type: T,
-    to: string,
+    to: string | string[],
     context: DynamicContextPickType[T],
   ): Promise<void> {
     const { subject, template } = emailResponseTree[type];

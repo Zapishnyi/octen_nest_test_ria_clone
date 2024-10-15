@@ -1,5 +1,13 @@
 import { Transform, Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Max,
+  Min,
+} from 'class-validator';
 
 import { TransformHelper } from '../../../../common/helpers/Transform.helper';
 import { UserPlanEnum } from '../../enums/user-plan.enum';
@@ -26,6 +34,18 @@ export class GetUsersQueryReqDto {
   @IsOptional()
   @IsEnum(UserPlanEnum)
   plan?: UserPlanEnum;
+
+  @IsString()
+  @IsOptional()
+  @Transform(TransformHelper.trim)
+  @IsUUID()
+  user_id?: string;
+
+  @IsString()
+  @IsOptional()
+  @Transform(TransformHelper.trim)
+  @IsUUID()
+  car_id?: string;
 
   @IsString()
   @IsOptional()

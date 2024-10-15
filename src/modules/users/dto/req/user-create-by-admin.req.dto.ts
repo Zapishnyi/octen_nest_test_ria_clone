@@ -12,15 +12,15 @@ export class UserCreateByAdminReqDto extends PickType(UserBaseReqDto, [
   'last_name',
   'email',
   'phone',
-  'avatar_image',
   'password',
 ]) {
   @IsString()
+  @IsOptional()
   @IsEnum(AdminRoleEnum, {
     message: 'Role must be one of the following values:buyer,seller',
   })
   @Transform(TransformHelper.trim)
-  public readonly role: AdminRoleEnum;
+  public readonly role?: AdminRoleEnum;
 
   @IsString()
   @IsEnum(UserPlanEnum, {

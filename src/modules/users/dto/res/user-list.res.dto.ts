@@ -47,7 +47,7 @@ export class UserListResDto {
     description: 'Search by user role ',
   })
   @IsOptional()
-  role: string;
+  role?: string;
 
   @ApiProperty({
     enum: UserPlanEnum,
@@ -55,5 +55,11 @@ export class UserListResDto {
     description: 'Search by user plan ',
   })
   @IsOptional()
-  plan: UserPlanEnum;
+  plan?: UserPlanEnum;
+
+  @IsOptional()
+  user_id: string;
+
+  @IsOptional()
+  car_id: string;
 }
